@@ -33,10 +33,16 @@ class image_converter:
 		res = cv2.bitwise_and(hsv, hsv, mask=mask)
 
 		im2, cnts, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		largestArea = 0
+		largestRect = None
 		for c in cnts:
 			if cv2.contourArea(c) < 100:
 				continue
-			(x, y, w, h) = cv2.boundingRect(c)
+			if cv2.contourArea(c) > largestArea:
+				largestArea = cv2.contourArea(c)
+				largestRect = cv2.boundingRect(c)
+		if largestArea > 0:
+			(x, y, w, h) = largestRect
 			cv2.rectangle(cv_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 		
 		cv2.imshow("Bucket Detector 2", cv_image)
